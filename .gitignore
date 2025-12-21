@@ -1,0 +1,111 @@
+# ------------------------------
+# Python bytecode & caches
+# ------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ------------------------------
+# Virtual environments
+# ------------------------------
+.env
+.venv
+env/
+venv/
+ENV/
+
+# ------------------------------
+# Jupyter / IPython
+# ------------------------------
+.ipynb_checkpoints/
+.profile_default/
+.ipython/
+
+# ------------------------------
+# Data & model artifacts
+# (keep raw data out of git)
+# ------------------------------
+data/
+datasets/
+*.csv
+*.tsv
+*.parquet
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+*.joblib
+*.zip
+
+# ------------------------------
+# Machine learning outputs
+# ------------------------------
+models/
+checkpoints/
+runs/
+wandb/
+mlruns/
+*.pt
+*.pth
+*.onnx
+*.ckpt
+
+# ------------------------------
+# Logs & temp files
+# ------------------------------
+logs/
+*.log
+*.tmp
+*.swp
+*.swo
+
+# ------------------------------
+# OS-specific junk
+# ------------------------------
+.DS_Store
+.DS_Store?
+Thumbs.db
+
+# ------------------------------
+# Editors & IDEs
+# ------------------------------
+.vscode/
+.idea/
+.spyderproject
+.spyproject
+*.sublime-project
+*.sublime-workspace
+
+# ------------------------------
+# Build & distribution
+# ------------------------------
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ------------------------------
+# Testing & coverage
+# ------------------------------
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# ------------------------------
+# Secrets (never trust yourself)
+# ------------------------------
+.env.*
+*.key
+*.pem
+secrets.yaml
+secrets.yml
+
+# ------------------------------
+# Quarto / R / reports (if applicable)
+# ------------------------------
+.Rhistory
+.RData
+.Rproj.user/
+_quarto/
+docs/_site/
