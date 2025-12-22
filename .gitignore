@@ -84,6 +84,7 @@ build/
 dist/
 *.egg-info/
 .eggs/
+model2ONNX.py
 
 # ------------------------------
 # Testing & coverage
