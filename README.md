@@ -22,7 +22,7 @@ The dataset includes diverse imagery: handheld pistols, illustrations, studio ph
 
 ## Model Architecture
 
-**Base Model:** YOLOv11 (Ultralytics)  
+**Base Model:** YOLOv10s (Ultralytics)  
 **Training Resolution:** 416x416 pixels  
 **Export Format:** ONNX  
 **Quantization:** INT8 dynamic quantization  
@@ -105,5 +105,3 @@ The application provides three inference modes:
 - **Video Processing:** Frame-by-frame analysis with aggregated metrics
 
 Access the interface at `http://localhost:7860`
-
-Repository tree snapshot: see `CODE_TREE.md` at the repository root for a quick directory overview.

@@ -1,3 +1,10 @@
+# CC0 1.0 Universal (Public Domain Dedication)
+# Copyright (C) 2025 JustSplash8501
+# This work is dedicated to the public domain under the CC0 1.0 Universal license.
+# You can copy, modify, distribute, and perform the work, even for commercial purposes,
+# without asking permission. No rights are reserved.
+# Full license text: https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt
+
 import gradio as gr
 import cv2
 import numpy as np
@@ -192,7 +199,7 @@ def detect_pistol_image(image, confidence_threshold):
             detection_info += f"   Size: {int(x2-x1)}x{int(y2-y1)} pixels\n"
     else:
         detection_info += "No pistols detected above confidence threshold\n"
-        detection_info += f"\nTry lowering the confidence threshold or check if the model is detecting correctly."
+        detection_info += "\nTry lowering the confidence threshold or check if the model is detecting correctly."
     
     return annotated_image, detection_info
 
@@ -305,7 +312,7 @@ with gr.Blocks(title="Pistol Detection System") as demo:
     gr.Markdown("# 🎯 Pistol Detection System")
     gr.HTML("""
         <div class="subtitle">
-            Advanced firearm detection powered by INT8-quantized YOLOv8 neural network.
+            Advanced firearm detection powered by INT8-quantized YOLOv10s neural network.
             Real-time inference optimized for edge deployment.
         </div>
         <div style="text-align: center; margin-bottom: 20px;">
@@ -507,7 +514,7 @@ with gr.Blocks(title="Pistol Detection System") as demo:
     
     with gr.Accordion("Model Architecture", open=False):
         gr.Markdown("""
-        **Base Model:** YOLOv8 (You Only Look Once version 8)  
+        **Base Model:** YOLOv10s (You Only Look Once version 8)  
         **Optimization:** INT8 Dynamic Quantization  
         **Input Resolution:** 640 × 640 pixels  
         **Output Format:** Bounding boxes with confidence scores  
