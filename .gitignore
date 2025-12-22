@@ -13,6 +13,7 @@ __pycache__/
 env/
 venv/
 ENV/
+tools/
 
 # ------------------------------
 # Jupyter / IPython
@@ -40,14 +41,14 @@ datasets/
 # ------------------------------
 # Machine learning outputs
 # ------------------------------
-models/
 checkpoints/
+extracted/
+dataset/
 runs/
 wandb/
 mlruns/
 *.pt
 *.pth
-*.onnx
 *.ckpt
 
 # ------------------------------

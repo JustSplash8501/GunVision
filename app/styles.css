@@ -1,0 +1,111 @@
+/* styles.css - Custom styling for Pistol Detection Gradio Interface */
+
+/* Container and Layout */
+.gradio-container {
+    max-width: 100% !important;
+    padding: 20px !important;
+}
+
+/* Typography */
+h1 {
+    text-align: center;
+    color: #c0392b;
+    font-size: clamp(1.8em, 4vw, 2.5em);
+    margin-bottom: 0.5em;
+    font-weight: 700;
+}
+
+.subtitle {
+    text-align: center;
+    color: #555;
+    font-size: clamp(0.9em, 2vw, 1.1em);
+    margin-bottom: 2em;
+    padding: 0 10px;
+}
+
+/* Statistics Cards */
+.stat-card {
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+    margin: 10px;
+    min-width: 200px;
+}
+
+.stat-card h3 {
+    margin: 0;
+    color: white;
+    font-size: clamp(1em, 2.5vw, 1.2em);
+}
+
+.stat-card p.stat-value {
+    font-size: clamp(1.5em, 3vw, 1.8em);
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+.stat-card p.stat-label {
+    margin: 0;
+    opacity: 0.9;
+    font-size: clamp(0.8em, 1.5vw, 0.95em);
+}
+
+/* Info Boxes */
+.info-box {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: clamp(0.85em, 1.5vw, 0.95em);
+}
+
+.info-box strong {
+    color: inherit;
+}
+
+/* Tab Navigation */
+.tab-nav button {
+    font-size: clamp(0.9em, 1.8vw, 1.1em);
+    font-weight: 600;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+}
+
+/* GitHub Link */
+.github-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #24292e 0%, #1a1d21 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: transform 0.2s;
+    margin: 10px;
+}
+
+.github-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .gradio-container {
+        padding: 10px !important;
+    }
+
+    .stat-card {
+        margin: 5px;
+        padding: 15px;
+    }
+}

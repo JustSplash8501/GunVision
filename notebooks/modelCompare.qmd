@@ -1,0 +1,322 @@
+---
+title: "Model Optimization and Quantization Report"
+author: "Reese Wilson"
+date: today
+format:
+  html:
+    code-fold: false
+    toc: true
+    theme: cosmo
+---
+
+# Executive Summary
+
+This report evaluates the optimization and quantization of a YOLOv8 pistol detection model, comparing FP32 baseline and INT8 quantized versions across model size, inference speed, and detection performance.
+
+# Load Models
+
+```{python}
+import onnx
+import onnxruntime as ort
+import os
+import numpy as np
+from pathlib import Path
+import time
+import pandas as pd
+from PIL import Image
+import matplotlib.pyplot as plt
+
+MODEL_DIR = "models"
+
+if not os.path.exists(MODEL_DIR):
+    raise FileNotFoundError(f"Directory '{MODEL_DIR}' not found")
+
+model_files = [f for f in os.listdir(MODEL_DIR) if f.endswith(".onnx")]
+
+if not model_files:
+    raise FileNotFoundError(f"No .onnx files found in '{MODEL_DIR}'")
+
+print(f"Found {len(model_files)} ONNX models\n")
+
+models_info = {}
+
+for idx, filename in enumerate(model_files, 1):
+    filepath = os.path.join(MODEL_DIR, filename)
+    print(f"[{idx}/{len(model_files)}] Loading: {filename}")
+
+    try:
+        model = onnx.load(filepath)
+        onnx.checker.check_model(model)
+        
+        models_info[filename] = {
+            'path': filepath,
+            'model': model,
+            'valid': True
+        }
+        
+        print(f"  Status: Valid\n")
+
+    except onnx.checker.ValidationError as e:
+        print(f"  Validation failed: {str(e)}\n")
+        models_info[filename] = {'valid': False, 'error': str(e)}
+    except Exception as e:
+        print(f"  Load failed: {str(e)}\n")
+        models_info[filename] = {'valid': False, 'error': str(e)}
+```
+
+# Model Summaries
+
+```{python}
+summary_data = []
+
+for filename, info in models_info.items():
+    if not info.get('valid', False):
+        continue
+    
+    filepath = info['path']
+    model = info['model']
+    graph = model.graph
+    
+    file_size_mb = os.path.getsize(filepath) / (1024 * 1024)
+    ir_version = model.ir_version
+    opset_version = model.opset_import[0].version if model.opset_import else "Unknown"
+    num_nodes = len(graph.node)
+    
+    input_shape = [dim.dim_value if dim.dim_value > 0 else 'dynamic' 
+                   for dim in graph.input[0].type.tensor_type.shape.dim]
+    
+    dtype = onnx.TensorProto.DataType.Name(
+        graph.input[0].type.tensor_type.elem_type
+    )
+    
+    summary_data.append({
+        'Model': filename,
+        'Size (MB)': f"{file_size_mb:.2f}",
+        'IR Version': ir_version,
+        'Opset': opset_version,
+        'Nodes': num_nodes,
+        'Input Shape': str(input_shape),
+        'Data Type': dtype
+    })
+
+summary_df = pd.DataFrame(summary_data)
+print("\n## Model Architecture Summary\n")
+print(summary_df.to_markdown(index=False))
+
+if len(summary_data) >= 2:
+    sizes = [float(d['Size (MB)']) for d in summary_data]
+    baseline_size = max(sizes)
+    quantized_size = min(sizes)
+    compression = (1 - quantized_size / baseline_size) * 100
+    print(f"\nCompression ratio: {compression:.1f}% size reduction")
+```
+
+# Compare Inference Speeds
+
+```{python}
+sessions = {}
+for filename, info in models_info.items():
+    if info.get("valid", False):
+        sessions[filename] = ort.InferenceSession(
+            info["path"], providers=["CPUExecutionProvider"]
+        )
+
+input_shape = (1, 3, 640, 640)
+dummy_input = np.random.randn(*input_shape).astype(np.float32)
+
+# Warmup to stabilize timing measurements
+print("Warming up models...")
+for session in sessions.values():
+    input_name = session.get_inputs()[0].name
+    for _ in range(10):
+        _ = session.run(None, {input_name: dummy_input})
+
+print("\nRunning inference benchmarks (100 iterations)...\n")
+num_iterations = 100
+inference_results = []
+
+for filename, session in sessions.items():
+    input_name = session.get_inputs()[0].name
+
+    times = []
+    for _ in range(num_iterations):
+        start = time.perf_counter()
+        outputs = session.run(None, {input_name: dummy_input})
+        end = time.perf_counter()
+        times.append((end - start) * 1000)
+
+    avg_time = np.mean(times)
+    std_time = np.std(times)
+    min_time = np.min(times)
+    max_time = np.max(times)
+    fps = 1000 / avg_time
+
+    inference_results.append(
+        {
+            "Model": filename,
+            "Avg (ms)": f"{avg_time:.2f}",
+            "Std (ms)": f"{std_time:.2f}",
+            "Min (ms)": f"{min_time:.2f}",
+            "Max (ms)": f"{max_time:.2f}",
+            "FPS": f"{fps:.1f}",
+            "raw_avg": avg_time,
+            "raw_fps": fps,
+        }
+    )
+
+inference_df = pd.DataFrame(inference_results)
+print("## Inference Speed Comparison\n")
+print(
+    inference_df[
+        ["Model", "Avg (ms)", "Std (ms)", "Min (ms)", "Max (ms)", "FPS"]
+    ].to_markdown(index=False)
+)
+
+if len(inference_results) >= 2:
+    times = [float(r["raw_avg"]) for r in inference_results]
+    baseline_time = max(times)
+    optimized_time = min(times)
+    speedup = (baseline_time / optimized_time - 1) * 100
+    print(f"\nSpeedup: {speedup:.1f}% faster inference")
+
+# Color mapping for models
+color_map = {
+    "fp32": "#3498db",  # Blue for FP32
+    "int8": "#e74c3c",  # Red for INT8
+}
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+
+models = [
+    r["Model"].replace("pistol_detection_", "").replace(".onnx", "")
+    for r in inference_results
+]
+avg_times = [r["raw_avg"] for r in inference_results]
+fps_values = [r["raw_fps"] for r in inference_results]
+
+# Assign colors based on model type
+colors = [
+    color_map.get("int8" if "int8" in name else "fp32", "#95a5a6") for name in models
+]
+
+# Plot 1: Inference Time
+bars1 = ax1.bar(models, avg_times, color=colors, edgecolor="black", linewidth=1.5)
+ax1.set_ylabel("Inference Time (ms)", fontsize=11)
+ax1.set_title("Average Inference Time", fontsize=12, fontweight="bold")
+ax1.grid(axis="y", alpha=0.3)
+
+# Add value labels on bars
+for bar, time_val in zip(bars1, avg_times):
+    height = bar.get_height()
+    ax1.text(
+        bar.get_x() + bar.get_width() / 2.0,
+        height,
+        f"{time_val:.2f} ms",
+        ha="center",
+        va="bottom",
+        fontsize=10,
+        fontweight="bold",
+    )
+
+# Plot 2: FPS
+bars2 = ax2.bar(models, fps_values, color=colors, edgecolor="black", linewidth=1.5)
+ax2.set_ylabel("Frames Per Second", fontsize=11)
+ax2.set_title("Inference Throughput (FPS)", fontsize=12, fontweight="bold")
+ax2.grid(axis="y", alpha=0.3)
+
+# Add value labels on bars
+for bar, fps_val in zip(bars2, fps_values):
+    height = bar.get_height()
+    ax2.text(
+        bar.get_x() + bar.get_width() / 2.0,
+        height,
+        f"{fps_val:.1f} FPS",
+        ha="center",
+        va="bottom",
+        fontsize=10,
+        fontweight="bold",
+    )
+
+plt.tight_layout()
+plt.show()
+```
+
+# Inference Speeds
+
+```{bash}
+yolo val model=models/pistol_detection_fp32.onnx data=dataset/data.yaml task=detect
+yolo val model=models/pistol_detection_fp32_optimized.onnx data=dataset/data.yaml task=detect
+yolo val model=models/pistol_detection_int8.onnx data=dataset/data.yaml task=detect
+```
+
+# Performance Data
+
+```{python}
+from tabulate import tabulate
+
+# Model performance data
+performance_data = [
+    {
+        'Model': 'Baseline (FP32)',
+        'Images': 446,
+        'Instances': 512,
+        'Precision': 0.894,
+        'Recall': 0.809,
+        'mAP50': 0.890,
+        'mAP50-95': 0.641
+    },
+    {
+        'Model': 'Optimized (FP32)',
+        'Images': 446,
+        'Instances': 512,
+        'Precision': 0.894,
+        'Recall': 0.809,
+        'mAP50': 0.89,
+        'mAP50-95': 0.641
+    },
+    {
+        'Model': 'Quantized (INT8)',
+        'Images': 446,
+        'Instances': 512,
+        'Precision': 0.854,
+        'Recall': 0.826,
+        'mAP50': 0.895,
+        'mAP50-95': 0.646
+    }
+]
+
+# Format None values as dashes
+formatted_data = []
+for row in performance_data:
+    formatted_row = []
+    for key, value in row.items():
+        if value is None:
+            formatted_row.append('-')
+        elif isinstance(value, float):
+            formatted_row.append(f"{value:.3f}")
+        else:
+            formatted_row.append(value)
+    formatted_data.append(formatted_row)
+
+headers = ['Model', 'Images', 'Instances', 'Precision', 'Recall', 'mAP50', 'mAP50-95']
+
+print(tabulate(formatted_data, headers=headers, tablefmt='github'))
+```
+
+# Conclusion
+
+```{python}
+from tabulate import tabulate
+
+print(
+    inference_df[
+        ["Model", "Avg (ms)", "Std (ms)", "Min (ms)", "Max (ms)", "FPS"]
+    ].to_markdown(index=False)
+)
+print("\n\n")
+print(tabulate(formatted_data, headers=headers, tablefmt="github"))
+```
+
+Overall, the optimized and quantized that used `int8` data type showed the greatest FPS with the fastest, average inference speeds. In many cases, quantization of models will result in a decrease in accuracy; however, the models performance did not noticeable decline other than the reduction in Precisio from 0.894 to 0.854.
+
+Given all of this information, the quantized model can be deployed in any environment without fear of accuracy decline.
