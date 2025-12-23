@@ -24,50 +24,42 @@ This report evaluates the optimization and quantization of a YOLOv8 pistol detec
 ```{python}
 import onnx
 import onnxruntime as ort
-import os
-import numpy as np
 from pathlib import Path
+import numpy as np
 import time
 import pandas as pd
 from PIL import Image
 import matplotlib.pyplot as plt
 
-MODEL_DIR = "models"
-
-if not os.path.exists(MODEL_DIR):
+MODEL_DIR = Path("models")
+if not MODEL_DIR.exists() or not MODEL_DIR.is_dir():
     raise FileNotFoundError(f"Directory '{MODEL_DIR}' not found")
 
-model_files = [f for f in os.listdir(MODEL_DIR) if f.endswith(".onnx")]
-
+# List all .onnx files in the directory
+model_files = list(MODEL_DIR.glob("*.onnx"))
 if not model_files:
     raise FileNotFoundError(f"No .onnx files found in '{MODEL_DIR}'")
-
 print(f"Found {len(model_files)} ONNX models\n")
 
 models_info = {}
 
-for idx, filename in enumerate(model_files, 1):
-    filepath = os.path.join(MODEL_DIR, filename)
-    print(f"[{idx}/{len(model_files)}] Loading: {filename}")
+for idx, filepath in enumerate(model_files, 1):
+    print(f"[{idx}/{len(model_files)}] Loading: {filepath.name}")
 
     try:
-        model = onnx.load(filepath)
+        model = onnx.load(str(filepath))
         onnx.checker.check_model(model)
-        
-        models_info[filename] = {
-            'path': filepath,
-            'model': model,
-            'valid': True
-        }
-        
+
+        models_info[filepath.name] = {"path": filepath, "model": model, "valid": True}
+
         print(f"  Status: Valid\n")
 
     except onnx.checker.ValidationError as e:
         print(f"  Validation failed: {str(e)}\n")
-        models_info[filename] = {'valid': False, 'error': str(e)}
+        models_info[filepath.name] = {"valid": False, "error": str(e)}
     except Exception as e:
         print(f"  Load failed: {str(e)}\n")
-        models_info[filename] = {'valid': False, 'error': str(e)}
+        models_info[filepath.name] = {"valid": False, "error": str(e)}
 ```
 
 # Model Summaries
