@@ -309,7 +309,7 @@ def load_css():
 with gr.Blocks(title="Pistol Detection System") as demo:
     
     # Header with GitHub link
-    gr.Markdown("# 🎯 Pistol Detection System")
+    gr.Markdown("# Pistol Detection System")
     gr.HTML("""
         <div class="subtitle">
             Advanced firearm detection powered by INT8-quantized YOLOv10s neural network.
@@ -358,8 +358,8 @@ with gr.Blocks(title="Pistol Detection System") as demo:
         # Image Upload Tab
         with gr.Tab("📸 Image Upload"):
             gr.HTML("""
-            <div class="info-box" style="background-color: #f8f9fa; border-left: 4px solid #667eea;">
-                <strong>💡 Tip:</strong> Upload clear images with visible firearms for best results. 
+            <div class="info-box" style="background-color: #f8f9fa; color: #000000; border-left: 4px solid #667eea;">
+                <strong>Tip:</strong> Upload clear images with visible firearms for best results. 
                 Supported formats: JPG, PNG, WebP
             </div>
             """)
@@ -401,8 +401,8 @@ with gr.Blocks(title="Pistol Detection System") as demo:
         # Webcam Tab (Real-time)
         with gr.Tab("📹 Webcam (Real-time)"):
             gr.HTML("""
-            <div class="info-box" style="background-color: #fff3cd; border-left: 4px solid #ffc107;">
-                <strong>⚠️ Note:</strong> Real-time streaming processes frames at ~10 FPS. 
+            <div class="info-box" style="background-color: #fff3cd; color: #000000; border-left: 4px solid #ffc107;">
+                <strong>Note:</strong> Real-time streaming processes frames at ~10 FPS. 
                 Allow camera permissions when prompted.
             </div>
             """)
@@ -441,8 +441,8 @@ with gr.Blocks(title="Pistol Detection System") as demo:
         # Video Tab
         with gr.Tab("🎬 Video Processing"):
             gr.HTML("""
-            <div class="info-box" style="background-color: #d1ecf1; border-left: 4px solid #17a2b8;">
-                <strong>ℹ️ Info:</strong> Upload MP4 videos for frame-by-frame analysis. 
+            <div class="info-box" style="background-color: #d1ecf1; color: #000000; border-left: 4px solid #17a2b8;">
+                <strong>Info:</strong> Upload MP4 videos for frame-by-frame analysis. 
                 Processing time depends on video length and resolution.
             </div>
             """)
@@ -486,7 +486,7 @@ with gr.Blocks(title="Pistol Detection System") as demo:
     with gr.Row():
         with gr.Column(min_width=250):
             gr.Markdown("""
-            ### 1️⃣ Upload Content
+            ### 1. Upload Content
             Choose from three input methods:
             - Static images (JPG, PNG)
             - Live webcam stream
@@ -494,14 +494,14 @@ with gr.Blocks(title="Pistol Detection System") as demo:
             """)
         with gr.Column(min_width=250):
             gr.Markdown("""
-            ### 2️⃣ Adjust Settings
+            ### 2. Adjust Settings
             Fine-tune detection sensitivity:
             - Higher threshold: Fewer, more confident detections
             - Lower threshold: More detections, potential false positives
             """)
         with gr.Column(min_width=250):
             gr.Markdown("""
-            ### 3️⃣ Analyze Results
+            ### 3. Analyze Results
             View comprehensive detection data:
             - Bounding box coordinates
             - Confidence scores
@@ -510,7 +510,7 @@ with gr.Blocks(title="Pistol Detection System") as demo:
     
     # Model Information
     gr.Markdown("---")
-    gr.Markdown("## 🔧 Technical Specifications")
+    gr.Markdown("## Technical Specifications")
     
     with gr.Accordion("Model Architecture", open=False):
         gr.Markdown("""
@@ -539,7 +539,7 @@ with gr.Blocks(title="Pistol Detection System") as demo:
             Model trained on custom pistol detection dataset • For educational and security purposes
         </p>
         <div style="margin-top: 15px;">
-            <a href="https://github.com/yourusername/pistol-detection" target="_blank" class="github-link">
+            <a href="https://github.com/JustSplash8501/GunVision" target="_blank" class="github-link">
                 <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor">
                     <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
                 </svg>

@@ -52,6 +52,8 @@ A comparison of the original, baseline ONNX model, an optimized FP32 model, and 
 - **Model variant used:** `s` (small) variation of YOLOv11
 - **Throughput comparison note:** the reported ~20% CPU throughput improvement compares inference between the optimized/quantized model and the baseline model (model-to-model comparison), not different hardware configurations.
 
+*["img/vision.png"]*
+
 ### Limitations & Intended Use
 
 - **Dataset size and diversity:** The training dataset contains 2,973 images and 3,448 annotations. This is a modest dataset and may not capture the full variety of real-world appearances or imaging conditions (different cameras, lighting, occlusion patterns, wear, unusual viewpoints).
