@@ -2,6 +2,10 @@
 
 A YOLOv11-based computer vision system for firearm detection in images and video streams, optimized for edge deployment through INT8 quantization.
 
+![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
+![License](https://img.shields.io/badge/license-Public%20Domain-lightgrey)
+![Accuracy](https://img.shields.io/badge/mAP50-89%25-brightgreen.svg)
+
 ## Dataset
 
 **Source:** [Pistols Dataset - Roboflow](https://public.roboflow.ai/object-detection/pistols)  
