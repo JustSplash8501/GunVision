@@ -11,7 +11,7 @@ import numpy as np
 from PIL import Image
 import tempfile
 import onnxruntime as ort
-from Pathlib import Path
+from pathlib import Path
 
 # Load ONNX model
 MODEL_PATH = Path("models/pistol_detection_int8.onnx")
