@@ -35,7 +35,7 @@ MODEL_DIR = Path("models")
 if not MODEL_DIR.exists() or not MODEL_DIR.is_dir():
     raise FileNotFoundError(f"Directory '{MODEL_DIR}' not found")
 
-# List all .onnx files in the directory
+# List all .onnx files
 model_files = list(MODEL_DIR.glob("*.onnx"))
 if not model_files:
     raise FileNotFoundError(f"No .onnx files found in '{MODEL_DIR}'")
@@ -122,7 +122,6 @@ for filename, info in models_info.items():
 input_shape = (1, 3, 640, 640)
 dummy_input = np.random.randn(*input_shape).astype(np.float32)
 
-# Warmup to stabilize timing measurements
 print("Warming up models...")
 for session in sessions.values():
     input_name = session.get_inputs()[0].name
@@ -197,7 +196,7 @@ colors = [
     color_map.get("int8" if "int8" in name else "fp32", "#95a5a6") for name in models
 ]
 
-# Plot 1: Inference Time
+# Plot Inference Time
 bars1 = ax1.bar(models, avg_times, color=colors, edgecolor="black", linewidth=1.5)
 ax1.set_ylabel("Inference Time (ms)", fontsize=11)
 ax1.set_title("Average Inference Time", fontsize=12, fontweight="bold")
@@ -216,7 +215,7 @@ for bar, time_val in zip(bars1, avg_times):
         fontweight="bold",
     )
 
-# Plot 2: FPS
+# FPS Perforance (on CPU)
 bars2 = ax2.bar(models, fps_values, color=colors, edgecolor="black", linewidth=1.5)
 ax2.set_ylabel("Frames Per Second", fontsize=11)
 ax2.set_title("Inference Throughput (FPS)", fontsize=12, fontweight="bold")

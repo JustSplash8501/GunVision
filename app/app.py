@@ -57,7 +57,7 @@ def postprocess_detections(outputs, original_shape, conf_threshold=0.5):
     Returns:
         List of detections: [x1, y1, x2, y2, confidence, class_id]
     """
-    # Output shape: [1, 300, 6] where 6 = [x1, y1, x2, y2, confidence, class_id]
+    # Output shape
     predictions = outputs[0]
     
     # Remove batch dimension
@@ -72,7 +72,7 @@ def postprocess_detections(outputs, original_shape, conf_threshold=0.5):
     scale_y = orig_h / model_height
     
     for pred in predictions:
-        # Extract values: [x1, y1, x2, y2, confidence, class_id]
+        # Extract values from output shape
         x1, y1, x2, y2, confidence, class_id = pred
         
         # Filter by confidence threshold
@@ -174,7 +174,7 @@ def detect_pistol_image(image, confidence_threshold):
     # Run inference
     outputs = session.run(None, {input_name: input_tensor})
     
-    # Debug: Print output shape
+    # Shape if needed
     output_shape = outputs[0].shape
     
     # Postprocess
@@ -189,7 +189,6 @@ def detect_pistol_image(image, confidence_threshold):
     detection_info += f"Output shape: {output_shape}\n"
     detection_info += f"Confidence threshold: {confidence_threshold}\n"
     detection_info += f"Total detections: {len(detections)}\n\n"
-    
     if len(detections) > 0:
         detection_info += "Detections:\n"
         for i, det in enumerate(detections, 1):
@@ -224,13 +223,13 @@ def detect_pistol_video(video_path, confidence_threshold, progress=gr.Progress()
     # Open video
     cap = cv2.VideoCapture(video_path)
     
-    # Get video properties
+    # Video properties
     fps = int(cap.get(cv2.CAP_PROP_FPS))
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     
-    # Create temporary output file
+    # Temp output file
     output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.mp4').name
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
@@ -251,7 +250,7 @@ def detect_pistol_video(video_path, confidence_threshold, progress=gr.Progress()
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         original_shape = frame_rgb.shape[:2]
         
-        # Process image into tensor
+        # Convert image to tensor
         input_tensor = preprocess_image(frame_rgb, (model_width, model_height))
         
         # Run inference
@@ -268,7 +267,7 @@ def detect_pistol_video(video_path, confidence_threshold, progress=gr.Progress()
         annotated_frame_bgr = cv2.cvtColor(annotated_frame, cv2.COLOR_RGB2BGR)
         out.write(annotated_frame_bgr)
         
-        # Update statistics
+        # Update vision statistics
         if num_detections > 0:
             frames_with_detections += 1
             total_detections += num_detections
